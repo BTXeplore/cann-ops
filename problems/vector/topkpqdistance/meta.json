@@ -1,0 +1,10 @@
+{
+  "contest": "vector",
+  "contestId": "6a9644c4bf41025d606e16b6",
+  "contestTitle": "Vector算子题目",
+  "problem": "topkpqdistance",
+  "problemId": "6ae163271dac5d235bfd56af",
+  "problemTitle": "TopKPQDistance",
+  "codeTemplate": "npu_kernel_dev",
+  "fetchedAt": "2026-11-06T08:22:59.765Z"
+}
