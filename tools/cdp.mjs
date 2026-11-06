@@ -56,8 +56,8 @@ export async function ensureDaemon() {
   throw new Error('CDP daemon 启动失败：' + script);
 }
 
-export async function wakePage() {
-  await post('/shot', { match: MATCH, file: WAKE_FILE });
+export async function wakePage(match = MATCH) {
+  await post('/shot', { match, file: WAKE_FILE });
 }
 
 export async function pages() {
@@ -66,18 +66,18 @@ export async function pages() {
   return r.pages || [];
 }
 
-// 在 cannjudge 页面里执行表达式，返回解析后的 JSON
-export async function evalPage(expression) {
+// 在页面里执行表达式，返回解析后的 JSON；match 是 URL 子串（默认 cannjudge）
+export async function evalPage(expression, match = MATCH) {
   await ensureDaemon();
-  let r = await post('/eval', { match: MATCH, expression });
+  let r = await post('/eval', { match, expression });
   if (typeof r.result !== 'string') {
-    await wakePage();
+    await wakePage(match);
     await sleep(1200);
-    r = await post('/eval', { match: MATCH, expression });
+    r = await post('/eval', { match, expression });
   }
   if (r.error) {
     if (r.error === 'no matching page') {
-      throw new Error('没找到 cannjudge 页面：请先在 Edge 里打开 https://cannjudge.cn');
+      throw new Error(`没找到匹配 "${match}" 的页面：请先在 Edge 里打开它`);
     }
     throw new Error(r.error);
   }
@@ -85,7 +85,7 @@ export async function evalPage(expression) {
     throw new Error('页面脚本异常：' + JSON.stringify(r.exception).slice(0, 400));
   }
   if (typeof r.result !== 'string') {
-    throw new Error('页面无响应（后台标签页被冻结），请把 cannjudge 标签页切到前台后重试');
+    throw new Error('页面无响应（后台标签页被冻结），请把该标签页切到前台后重试');
   }
   return JSON.parse(r.result);
 }
@@ -96,4 +96,12 @@ export async function openPage(url = 'https://cannjudge.cn') {
   const r = await post('/open', { url });
   if (r.error) throw new Error(r.error);
   return r.targetId;
+}
+
+// 把匹配到的标签页导航到指定 URL（不新开标签页）
+export async function navigate(url, match = MATCH) {
+  await ensureDaemon();
+  const r = await post('/navigate', { match, url });
+  if (r.error) throw new Error(r.error);
+  return true;
 }

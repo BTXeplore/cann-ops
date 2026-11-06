@@ -1,8 +1,11 @@
 """Python mirror of the Ascend C algorithm (heap semantics identical) to validate logic."""
-import numpy as np
+import os
 import sys
-sys.path.insert(0, '.')
-from topkpq import reference
+
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import reference
 
 
 def is_worse(av, ai, bv, bi, desc):

@@ -1,10 +1,17 @@
 # cann-ops
 
+[![sim](https://github.com/BTXeplore/cann-ops/actions/workflows/sim.yml/badge.svg)](https://github.com/BTXeplore/cann-ops/actions/workflows/sim.yml)
+
 昇腾 CANN Judge 算子题解的本地工作区 + 命令行工具。
 
 - **cannjudge CLI**：一条命令拉题、提交、等评测，复用浏览器已登录的会话（不存 token/密码）。
 - **题解目录**：每道题一个目录，`kernel.asc` 就是要提交的文件，其余是模板参考与自测脚本。
-- **git 仓库**：可直接开源源码与思路（不含测试数据）。
+- **可验证**：`sim/` 用 Python 1:1 复刻 kernel 的堆语义与 golden 对拍，GitHub Actions 每次 push 自动跑（不需要 NPU）。
+
+## 成绩
+
+`vector/topkpqdistance`：**15/15 用例 Pass，排行榜 #1，score 98.88，15 个用例合计 168 ms**
+（同题此前最好成绩 3.42 s，慢 20 倍）。
 
 ## 快速开始
 

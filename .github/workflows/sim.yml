@@ -1,0 +1,25 @@
+name: sim
+
+# 纯 Python 的逻辑对拍：不需要 NPU / CANN，任何机器都能跑
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numpy
+        run: pip install 'numpy>=1.24'
+      - name: 随机用例 × 300 对拍 golden
+        working-directory: problems/vector/topkpqdistance/sim
+        run: python sim.py
+      - name: 边界用例（n=1..17 / k=n / 质数 group_size / cores=1,40）
+        working-directory: problems/vector/topkpqdistance/sim
+        run: python edge_cases.py
