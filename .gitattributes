@@ -1,0 +1,5 @@
+# 统一 LF，避免 .sh 在 Linux 上因 CRLF 挂掉
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.zip binary

@@ -130,13 +130,18 @@ function collectSources(dir) {
   return files;
 }
 
-async function submit(dir, watch) {
+async function submit(dir, watch, dryRun) {
   const metaPath = path.join(dir, 'meta.json');
   if (!existsSync(metaPath)) throw new Error(`${dir}/meta.json 不存在，先跑 cannjudge fetch`);
   const meta = JSON.parse(readFileSync(metaPath, 'utf8'));
   const files = collectSources(dir);
   if (!files.length) throw new Error(`${dir} 里没有 .asc/.h 源文件`);
   console.log(`提交 ${meta.contest}/${meta.problem}（${files.length} 个文件：${files.map((f) => f.path).join(', ')}）`);
+  if (dryRun) {
+    for (const f of files) console.log(`  ${f.path}  ${f.content.length} chars`);
+    console.log(`  problemId = ${meta.problemId}（--dry-run，未真正提交）`);
+    return null;
+  }
 
   const out = await run(`
     const u = me();
@@ -227,7 +232,7 @@ const help = `cannjudge — CANN Judge 命令行
   contests                        列出公共题库的比赛/题目集
   problems <contest>              列出某比赛下的题目（含 problemId）
   fetch <contest>/<problem> [dir] 拉模板到目录（ref/ 存原始模板，可编辑文件放根目录）
-  submit <dir> [--watch]          提交该目录下的 .asc/.h 并可选等待评测
+  submit <dir> [--watch] [--dry-run]  提交该目录下的 .asc/.h 并可选等待评测
   status <submissionId>           查一次评测结果
   open                            在 Edge 里打开 cannjudge.cn
 
@@ -241,7 +246,7 @@ try {
     case 'contests': await contests(); break;
     case 'problems': await problems(args[0]); break;
     case 'fetch': await fetchProblem(args[0], args[1]); break;
-    case 'submit': await submit(args[0] || '.', args.includes('--watch')); break;
+    case 'submit': await submit(args[0] || '.', args.includes('--watch'), args.includes('--dry-run')); break;
     case 'status': await status(args[0]); break;
     case 'watch': await watchSubmission(args[0]); break;
     case 'open': { const id = await openPage(); console.log('已打开 targetId=' + id); break; }
